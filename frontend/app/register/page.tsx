@@ -1,16 +1,22 @@
+"use client";
+
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import api from "../services/api";
+import { useRouter } from "next/navigation";
+import api from "@/lib/api";
 
 export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await api.post("/users/register", { email, password });
-    navigate("/login");
+    try {
+      await api.post("/users/register", { email, password });
+      router.push("/login");
+    } catch (err) {
+      alert("Registration failed");
+    }
   };
 
   return (
@@ -33,6 +39,15 @@ export default function Register() {
           placeholder="Password"
           type="password"
         />
+        <div
+          onClick={() => {
+            router.push("/login");
+          }}
+        >
+          <p className="text-neutral-500 font-bold hover:underline">
+            already have an account signup?
+          </p>
+        </div>
         <button
           type="submit"
           className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded"

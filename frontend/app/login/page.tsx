@@ -1,17 +1,24 @@
+"use client";
+
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { setToken } from "../auth";
-import api from "../services/api";
+import { useRouter } from "next/navigation";
+import api from "@/lib/api";
+import { setToken } from "@/lib/auth";
+
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await api.post("/users/login", { email, password });
-    setToken(res.data.token);
-    navigate("/tasks");
+    try {
+      const res = await api.post("/users/login", { email, password });
+      setToken(res.data.token);
+      router.push("/tasks");
+    } catch (err) {
+      alert("Login failed");
+    }
   };
 
   return (
@@ -34,6 +41,14 @@ export default function Login() {
           placeholder="Password"
           type="password"
         />
+        <div className="flex items-center">
+          <p className="font-bold text-neutral-500">don'have an account? </p>
+          <a href="/register" className="underline font-bold text-neutral-500">
+            {" "}
+            register
+          </a>
+        </div>
+
         <button
           type="submit"
           className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded"
